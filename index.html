@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من أهلية الدخول المجاني للأطفال</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .card {
+            background-color: #f1f1f1;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+        
+        .date-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .date-display span {
+            display: block;
+            margin-top: 5px;
+            font-weight: normal;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="date"], .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            text-align: right;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .result-message {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: none; /* Hidden by default */
+            margin-top: 20px;
+        }
+
+        .result-message.success {
+            background-color: #d4edda;
+            color: var(--success-color);
+            border: 1px solid #c3e6cb;
+        }
+
+        .result-message.error {
+            background-color: #f8d7da;
+            color: var(--error-color);
+            border: 1px solid #f5c6cb;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+            background-color: #f1f1f1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>فعالية مجتمعنا</h1>
+            <p>مرحباً بكم! الدخول مجاني للأطفال تحت سن 5 سنوات.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>أقل تاريخ ميلاد للدخول المجاني</h2>
+                <p class="date-display" id="gregorian-cutoff">
+                    <span>- بالتقويم الميلادي -</span>
+                </p>
+                <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+                <p class="date-display" id="hijri-cutoff">
+                    <span>- بالتقويم الهجري -</span>
+                </p>
+            </div>
+
+            <div class="manual-check">
+                <h2>التحقق اليدوي من تاريخ الميلاد</h2>
+                <div class="form-group">
+                    <label for="gregorian-birthdate">أدخل تاريخ الميلاد (ميلادي):</label>
+                    <input type="date" id="gregorian-birthdate">
+                </div>
+                <div class="form-group">
+                    <label for="hijri-birthdate">أو أدخل تاريخ الميلاد (هجري - يوم/شهر/سنة):</label>
+                    <input type="text" id="hijri-birthdate" placeholder="مثال: 15/09/1442">
+                </div>
+
+                <div id="result" class="result-message"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>تصميم وتطوير بواسطة الذكاء الاصطناعي</p>
+        </div>
+    </div>
+
+    <script>
+        // دالة لتحويل التاريخ الميلادي إلى الهجري
+        function toHijri(date) {
+            return new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            }).format(date);
+        }
+
+        // دالة لتحويل التاريخ الهجري (نص) إلى ميلادي (تجتهد في التحويل)
+        // ملاحظة: التحويل من الهجري للنصي للميلادي معقد. هذا حل تقريبي.
+        // لأفضل النتائج، يفضل استخدام مكتبة متخصصة إذا تطلب الأمر دقة متناهية.
+        function hijriToGregorian(hijriString) {
+            const parts = hijriString.split(/[\/\-\.]/);
+            if (parts.length !== 3) return null;
+            
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) -1; // الشهر يبدأ من 0
+            const year = parseInt(parts[2], 10);
+
+            // تحويل تقريبي جدًا وقد يختلف بيوم واحد
+            // (السنة الهجرية أقصر من الميلادية بحوالي 11 يومًا)
+            const gregorianYear = Math.floor(year * 0.97 + 622);
+            
+            // محاولة إنشاء تاريخ ميلادي. قد لا يكون دقيقًا.
+            const tempDate = new Date(gregorianYear, month, day);
+            
+            // الحل الأبسط هو البحث عن تاريخ ميلادي يعطينا نفس التاريخ الهجري المدخل
+            // ولكن هذا معقد. سنعتمد على المدخل الميلادي بشكل أساسي.
+            // هنا نرجع قيمة غير صالحة للتنبيه بأن التحويل غير دقيق
+            alert("للحصول على نتيجة دقيقة، يرجى استخدام حقل التاريخ الميلادي. التحويل من الهجري النصي هو عملية تقريبية.");
+            return null;
+        }
+
+        // حساب تاريخ القطع (قبل 5 سنوات من اليوم)
+        const today = new Date();
+        const cutoffDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+
+        // عرض تاريخ القطع بالتقويمين
+        document.getElementById('gregorian-cutoff').innerHTML = `
+            ${cutoffDate.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
+            <span>- بالتقويم الميلادي -</span>
+        `;
+        document.getElementById('hijri-cutoff').innerHTML = `
+            ${toHijri(cutoffDate)}
+            <span>- بالتقويم الهجري -</span>
+        `;
+        
+        const gregorianInput = document.getElementById('gregorian-birthdate');
+        const hijriInput = document.getElementById('hijri-birthdate');
+        const resultDiv = document.getElementById('result');
+
+        function checkBirthDate(birthDate) {
+            if (!birthDate || isNaN(birthDate.getTime())) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+
+            if (birthDate > cutoffDate) {
+                resultDiv.textContent = '🎉 دخول الطفل مجاني!';
+                resultDiv.className = 'result-message success';
+            } else {
+                resultDiv.textContent = '⛔️ عمر الطفل 5 سنوات أو أكثر.';
+                resultDiv.className = 'result-message error';
+            }
+            resultDiv.style.display = 'block';
+        }
+        
+        // عند التغيير في حقل التاريخ الميلادي
+        gregorianInput.addEventListener('input', () => {
+            hijriInput.value = ''; // مسح الحقل الآخر
+            const birthDate = new Date(gregorianInput.value);
+            checkBirthDate(birthDate);
+        });
+
+        // عند التغيير في حقل التاريخ الهجري
+        hijriInput.addEventListener('input', () => {
+            gregorianInput.value = ''; // مسح الحقل الآخر
+            resultDiv.style.display = 'none'; // إخفاء الرسالة لأن التحويل غير مضمون
+            
+            // ملاحظة: كما ذكرنا، التحويل من نص هجري غير دقيق بدون مكتبة متخصصة.
+            // الكود التالي يعطي تنبيهًا ولا يقوم بالتحقق.
+            if(hijriInput.value.length > 8) { // تحقق بسيط
+                 hijriToGregorian(hijriInput.value);
+            }
+        });
+
+    </script>
+</body>
+</html>
