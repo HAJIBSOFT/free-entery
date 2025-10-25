@@ -1,25 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التحقق من أهلية الدخول المجاني للأطفال</title>
+    <title>التحقق من أهلية الدخول المجاني</title>
+    
+    <!-- Google Fonts: Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Moment.js and Moment-Hijri for accurate date conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-hijri/2.1.2/moment-hijri.min.js"></script>
+
     <style>
         :root {
-            --primary-color: #0056b3;
-            --secondary-color: #007bff;
-            --background-color: #f8f9fa;
-            --card-background: #ffffff;
-            --text-color: #333;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-            --border-radius: 12px;
-            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --primary-color: #2c3e50; /* لون أساسي داكن وأنيق */
+            --secondary-color: #3498db; /* لون ثانوي جذاب */
+            --background-color: #ecf0f1; /* لون خلفية هادئ */
+            --surface-color: #ffffff; /* لون الأسطح والبطاقات */
+            --text-color: #34495e; /* لون النص الرئيسي */
+            --success-color: #27ae60; /* لون النجاح */
+            --error-color: #c0392b; /* لون الخطأ */
+            --border-radius: 10px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            font-family: 'Tahoma', sans-serif;
+            font-family: var(--font-family);
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
@@ -32,27 +42,30 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
-            background-color: var(--card-background);
+            max-width: 500px;
+            background-color: var(--surface-color);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 30px 20px;
+            padding: 35px 25px;
             text-align: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            font-weight: 700;
         }
 
         .header p {
-            margin: 5px 0 0;
+            margin: 8px 0 0;
+            font-size: 1.1rem;
             opacity: 0.9;
         }
 
@@ -61,89 +74,117 @@
         }
 
         .card {
-            background-color: #f1f1f1;
+            background-color: #f9f9f9;
             border: 1px solid #e0e0e0;
             border-radius: var(--border-radius);
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             text-align: center;
         }
-
+        
         .card h2 {
             margin-top: 0;
             margin-bottom: 15px;
             color: var(--primary-color);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            font-weight: 700;
         }
         
         .date-display {
             font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
+            font-weight: 500;
+            color: var(--secondary-color);
         }
-        
+
         .date-display span {
             display: block;
-            margin-top: 5px;
-            font-weight: normal;
-            color: #555;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 10px;
         }
 
-        .form-group {
+        .manual-check h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .calendar-toggle {
+            display: flex;
+            justify-content: center;
             margin-bottom: 20px;
+            border: 1px solid #bdc3c7;
+            border-radius: var(--border-radius);
+            overflow: hidden;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .form-group input[type="date"], .form-group input[type="text"] {
-            width: 100%;
+        .calendar-toggle label {
+            flex: 1;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            text-align: right;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+            background-color: #fff;
+        }
+
+        .calendar-toggle input[type="radio"] {
+            display: none;
+        }
+
+        .calendar-toggle input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .date-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
         }
         
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        .date-input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+            text-align: center;
+            font-family: var(--font-family);
+            transition: border-color 0.3s ease;
         }
 
+        .date-input-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
         .result-message {
-            padding: 15px;
+            padding: 18px;
             border-radius: 8px;
             text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: none; /* Hidden by default */
-            margin-top: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .result-message.success {
-            background-color: #d4edda;
+            background-color: #e8f8f0;
             color: var(--success-color);
-            border: 1px solid #c3e6cb;
         }
 
         .result-message.error {
-            background-color: #f8d7da;
+            background-color: #fdedec;
             color: var(--error-color);
-            border: 1px solid #f5c6cb;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 0.9em;
-            color: #777;
-            background-color: #f1f1f1;
         }
 
     </style>
@@ -152,128 +193,115 @@
 
     <div class="container">
         <div class="header">
-            <h1>فعالية مجتمعنا</h1>
-            <p>مرحباً بكم! الدخول مجاني للأطفال تحت سن 5 سنوات.</p>
+            <h1>أهلاً بكم في فعاليتنا</h1>
+            <p>دخول الأطفال تحت 5 سنوات مجاني</p>
         </div>
 
         <div class="main-content">
             <div class="card">
-                <h2>أقل تاريخ ميلاد للدخول المجاني</h2>
-                <p class="date-display" id="gregorian-cutoff">
-                    <span>- بالتقويم الميلادي -</span>
-                </p>
-                <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
-                <p class="date-display" id="hijri-cutoff">
-                    <span>- بالتقويم الهجري -</span>
-                </p>
+                <h2>أقل تاريخ ميلاد للدخول المجاني هو:</h2>
+                <p class="date-display" id="cutoff-display"></p>
             </div>
 
             <div class="manual-check">
-                <h2>التحقق اليدوي من تاريخ الميلاد</h2>
-                <div class="form-group">
-                    <label for="gregorian-birthdate">أدخل تاريخ الميلاد (ميلادي):</label>
-                    <input type="date" id="gregorian-birthdate">
+                <h2>التحقق من تاريخ الميلاد</h2>
+                
+                <div class="calendar-toggle">
+                    <input type="radio" id="cal-gregorian" name="calendar" value="gregorian" checked>
+                    <label for="cal-gregorian">ميلادي</label>
+                    <input type="radio" id="cal-hijri" name="calendar" value="hijri">
+                    <label for="cal-hijri">هجري</label>
                 </div>
-                <div class="form-group">
-                    <label for="hijri-birthdate">أو أدخل تاريخ الميلاد (هجري - يوم/شهر/سنة):</label>
-                    <input type="text" id="hijri-birthdate" placeholder="مثال: 15/09/1442">
+                
+                <div class="date-input-group">
+                    <input type="number" id="day" placeholder="اليوم" min="1" max="31">
+                    <input type="number" id="month" placeholder="الشهر" min="1" max="12">
+                    <input type="number" id="year" placeholder="السنة" min="1350">
                 </div>
 
                 <div id="result" class="result-message"></div>
             </div>
         </div>
-        
-        <div class="footer">
-            <p>تصميم وتطوير بواسطة الذكاء الاصطناعي</p>
-        </div>
     </div>
 
     <script>
-        // دالة لتحويل التاريخ الميلادي إلى الهجري
-        function toHijri(date) {
-            return new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-                day: 'numeric', month: 'long', year: 'numeric'
-            }).format(date);
-        }
+        // تهيئة لحظة للغة العربية
+        moment.locale('ar-SA');
 
-        // دالة لتحويل التاريخ الهجري (نص) إلى ميلادي (تجتهد في التحويل)
-        // ملاحظة: التحويل من الهجري للنصي للميلادي معقد. هذا حل تقريبي.
-        // لأفضل النتائج، يفضل استخدام مكتبة متخصصة إذا تطلب الأمر دقة متناهية.
-        function hijriToGregorian(hijriString) {
-            const parts = hijriString.split(/[\/\-\.]/);
-            if (parts.length !== 3) return null;
-            
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) -1; // الشهر يبدأ من 0
-            const year = parseInt(parts[2], 10);
-
-            // تحويل تقريبي جدًا وقد يختلف بيوم واحد
-            // (السنة الهجرية أقصر من الميلادية بحوالي 11 يومًا)
-            const gregorianYear = Math.floor(year * 0.97 + 622);
-            
-            // محاولة إنشاء تاريخ ميلادي. قد لا يكون دقيقًا.
-            const tempDate = new Date(gregorianYear, month, day);
-            
-            // الحل الأبسط هو البحث عن تاريخ ميلادي يعطينا نفس التاريخ الهجري المدخل
-            // ولكن هذا معقد. سنعتمد على المدخل الميلادي بشكل أساسي.
-            // هنا نرجع قيمة غير صالحة للتنبيه بأن التحويل غير دقيق
-            alert("للحصول على نتيجة دقيقة، يرجى استخدام حقل التاريخ الميلادي. التحويل من الهجري النصي هو عملية تقريبية.");
-            return null;
-        }
-
-        // حساب تاريخ القطع (قبل 5 سنوات من اليوم)
-        const today = new Date();
-        const cutoffDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+        // حساب تاريخ القطع
+        const cutoffDate = moment().subtract(5, 'years').add(1, 'day'); // قبل 5 سنوات + يوم واحد
 
         // عرض تاريخ القطع بالتقويمين
-        document.getElementById('gregorian-cutoff').innerHTML = `
-            ${cutoffDate.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
-            <span>- بالتقويم الميلادي -</span>
-        `;
-        document.getElementById('hijri-cutoff').innerHTML = `
-            ${toHijri(cutoffDate)}
-            <span>- بالتقويم الهجري -</span>
+        const cutoffDisplay = document.getElementById('cutoff-display');
+        cutoffDisplay.innerHTML = `
+            ${cutoffDate.format('D MMMM YYYY')} <span>(ميلادي)</span>
+            ${cutoffDate.format('iYYYY/iM/iD')} <span>(هجري)</span>
         `;
         
-        const gregorianInput = document.getElementById('gregorian-birthdate');
-        const hijriInput = document.getElementById('hijri-birthdate');
+        // جلب عناصر الإدخال
+        const dayInput = document.getElementById('day');
+        const monthInput = document.getElementById('month');
+        const yearInput = document.getElementById('year');
         const resultDiv = document.getElementById('result');
+        const calendarRadios = document.querySelectorAll('input[name="calendar"]');
 
-        function checkBirthDate(birthDate) {
-            if (!birthDate || isNaN(birthDate.getTime())) {
+        function validateAndCheck() {
+            const day = parseInt(dayInput.value, 10);
+            const month = parseInt(monthInput.value, 10);
+            const year = parseInt(yearInput.value, 10);
+            const selectedCalendar = document.querySelector('input[name="calendar"]:checked').value;
+            
+            // تحقق مبدئي من اكتمال الإدخال
+            if (!day || !month || !year || year.toString().length < 4) {
                 resultDiv.style.display = 'none';
                 return;
             }
 
-            if (birthDate > cutoffDate) {
-                resultDiv.textContent = '🎉 دخول الطفل مجاني!';
+            let birthDate;
+            let isValid = false;
+
+            // بناء التاريخ بناءً على التقويم المختار
+            if (selectedCalendar === 'gregorian') {
+                birthDate = moment(`${year}-${month}-${day}`, 'YYYY-M-D');
+                isValid = birthDate.isValid();
+            } else { // hijri
+                birthDate = moment(`${year}/${month}/${day}`, 'iYYYY/iM/iD');
+                isValid = birthDate.isValid() && birthDate.iYear() === year; // تأكيد إضافي لصحة السنة الهجرية
+            }
+            
+            if (!isValid) {
+                resultDiv.textContent = 'يرجى إدخال تاريخ صحيح.';
+                resultDiv.className = 'result-message error';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            // المقارنة وعرض النتيجة
+            if (birthDate.isAfter(cutoffDate)) {
+                resultDiv.innerHTML = '&#10004; دخول الطفل مجاني!';
                 resultDiv.className = 'result-message success';
             } else {
-                resultDiv.textContent = '⛔️ عمر الطفل 5 سنوات أو أكثر.';
+                resultDiv.innerHTML = '&#10006; عمر الطفل 5 سنوات أو أكثر.';
                 resultDiv.className = 'result-message error';
             }
             resultDiv.style.display = 'block';
         }
-        
-        // عند التغيير في حقل التاريخ الميلادي
-        gregorianInput.addEventListener('input', () => {
-            hijriInput.value = ''; // مسح الحقل الآخر
-            const birthDate = new Date(gregorianInput.value);
-            checkBirthDate(birthDate);
+
+        // إضافة مستمعي الأحداث
+        [dayInput, monthInput, yearInput].forEach(input => {
+            input.addEventListener('input', validateAndCheck);
         });
 
-        // عند التغيير في حقل التاريخ الهجري
-        hijriInput.addEventListener('input', () => {
-            gregorianInput.value = ''; // مسح الحقل الآخر
-            resultDiv.style.display = 'none'; // إخفاء الرسالة لأن التحويل غير مضمون
-            
-            // ملاحظة: كما ذكرنا، التحويل من نص هجري غير دقيق بدون مكتبة متخصصة.
-            // الكود التالي يعطي تنبيهًا ولا يقوم بالتحقق.
-            if(hijriInput.value.length > 8) { // تحقق بسيط
-                 hijriToGregorian(hijriInput.value);
-            }
+        calendarRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                // إعادة ضبط الحقول عند تغيير التقويم لتجنب الالتباس
+                dayInput.value = '';
+                monthInput.value = '';
+                yearInput.value = '';
+                resultDiv.style.display = 'none';
+                dayInput.focus();
+            });
         });
-
     </script>
 </body>
 </html>
